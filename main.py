@@ -7,35 +7,38 @@ from mutagen.flac import FLAC
 class GestionnaireBibliothequeMusicale:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gestionnaire de Bibliothèque Musicale")
-        self.root.geometry("800x600") 
+        self.root.title("DeesMusic")
+        self.root.geometry("800x600")  # Ajustez la taille selon vos besoins
 
         self.liste_de_musique = []
         self.playlists = {}
         self.selected_playlist = tk.StringVar()
 
+        # Créer une barre de menu
+        self.menu_bar = tk.Menu(root)
+
+        # Menu "Fichier"
+        self.menu_fichier = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_fichier.add_command(label="Ajouter des fichiers musicaux", command=self.ajouter_musique)
+        self.menu_fichier.add_command(label="Quitter", command=root.destroy)
+        self.menu_bar.add_cascade(label="Fichier", menu=self.menu_fichier)
+
+        # Menu "Playlist"
+        self.menu_playlist = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_playlist.add_command(label="Créer une playlist", command=self.creer_playlist)
+        self.menu_playlist.add_command(label="Ajouter à la playlist", command=self.ajouter_a_playlist)
+        self.menu_playlist.add_command(label="Afficher la playlist", command=self.afficher_playlist)
+        self.menu_bar.add_cascade(label="Playlist", menu=self.menu_playlist)
+
+        root.config(menu=self.menu_bar)
+
         # Créer des widgets
         self.frame = ttk.Frame(root, style="TFrame")
         self.frame.pack(padx=20, pady=20)
 
-        self.label = ttk.Label(self.frame, text="Bienvenue dans le Gestionnaire de Bibliothèque Musicale", style="TLabel")
-        self.label.pack(pady=10)
-
-        self.ajouter_bouton = ttk.Button(self.frame, text="Ajouter des fichiers musicaux", command=self.ajouter_musique)
-        self.ajouter_bouton.pack(pady=10)
-
         # Ajustez les dimensions du Listbox
         self.liste_box = tk.Listbox(self.frame, bd=0, selectbackground="#FFD700", height=20, width=50)
         self.liste_box.pack(pady=10)
-
-        self.creer_playlist_bouton = ttk.Button(self.frame, text="Créer une playlist", command=self.creer_playlist)
-        self.creer_playlist_bouton.pack(pady=5)
-
-        self.ajouter_a_playlist_bouton = ttk.Button(self.frame, text="Ajouter à la playlist", command=self.ajouter_a_playlist)
-        self.ajouter_a_playlist_bouton.pack(pady=5)
-
-        self.afficher_playlist_bouton = ttk.Button(self.frame, text="Afficher la playlist", command=self.afficher_playlist)
-        self.afficher_playlist_bouton.pack(pady=5)
 
         self.playlist_combobox = ttk.Combobox(self.frame, textvariable=self.selected_playlist, state="readonly")
         self.playlist_combobox.pack(pady=10)
