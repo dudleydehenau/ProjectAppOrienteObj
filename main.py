@@ -94,14 +94,23 @@ class GestionnaireBibliothequeMusicale:
                 Les fichiers sélectionnés doivent être au format MP3, WAV ou FLAC.
         - POST : La playlist est mise à jour avec les nouveaux fichiers.
         - RAISE : KeyError est levé si la playlist sélectionnée n'existe pas.
-                  ValueError est levé si des fichiers invalides sont sélectionnés.
+                ValueError est levé si des fichiers invalides sont sélectionnés.
         """
         selected_playlist = self.selected_playlist.get()
-        if selected_playlist in self.playlists:
-            selected_files = filedialog.askopenfilenames(title=f"Sélectionnez des fichiers pour {selected_playlist}",
-                                                          filetypes=[("Fichiers audio", "*.mp3;*.wav;*.flac")])
-            self.playlists[selected_playlist].extend(selected_files)
-            self.maj_liste_box()
+        try:
+            if selected_playlist in self.playlists:
+                selected_files = filedialog.askopenfilenames(title=f"Sélectionnez des fichiers pour {selected_playlist}",
+                                                            filetypes=[("Fichiers audio", "*.mp3;*.wav;*.flac")])
+                if selected_files:
+                    self.playlists[selected_playlist].extend(selected_files)
+                    self.maj_liste_box()
+            else:
+                raise KeyError(f"La playlist sélectionnée '{selected_playlist}' n'existe pas.")
+        except KeyError as e:
+            messagebox.showerror("Erreur", str(e))
+        except ValueError as e:
+            messagebox.showerror("Erreur", str(e))
+
 
     def afficher_playlist(self) -> None:
         """
@@ -213,9 +222,15 @@ class GestionnaireBibliothequeMusicale:
         - RAISE : KeyError est levé si la playlist sélectionnée n'existe pas.
         """
         selected_playlist = self.selected_playlist.get()
-        if selected_playlist in self.playlists:
-            del self.playlists[selected_playlist]
-            self.maj_liste_combobox()
+        try:
+            if selected_playlist in self.playlists:
+                del self.playlists[selected_playlist]
+                self.maj_liste_combobox()
+            else:
+                raise KeyError(f"La playlist sélectionnée '{selected_playlist}' n'existe pas.")
+        except KeyError as e:
+            messagebox.showerror("Erreur", str(e))
+
 
     def exporter_csv(self) -> None:
         """
