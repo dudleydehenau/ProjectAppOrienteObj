@@ -62,8 +62,9 @@ class GestionnaireBibliothequeMusicale:
         Ajoute des fichiers musicaux à la bibliothèque.
 
         Contrats:
-        - Les fichiers sélectionnés doivent être au format MP3, WAV ou FLAC.
-        - En cas de succès, la liste_de_musique est mise à jour.
+        - PRE : Aucune.
+        - POST : La liste_de_musique est mise à jour avec les fichiers sélectionnés.
+        - RAISE : Aucune exception n'est levée en cas de succès.
         """
         fichiers = filedialog.askopenfilenames(title="Sélectionnez des fichiers musicaux", filetypes=[("Fichiers audio", "*.mp3;*.wav;*.flac")])
         if fichiers:
@@ -75,8 +76,9 @@ class GestionnaireBibliothequeMusicale:
         Crée une nouvelle playlist.
 
         Contrats:
-        - Le nom de la playlist doit être une chaîne de caractères non vide.
-        - En cas de succès, une nouvelle playlist est ajoutée à l'attribut playlists.
+        - PRE : Le nom de la playlist ne doit pas être vide.
+        - POST : Une nouvelle playlist est ajoutée à l'attribut playlists.
+        - RAISE : ValueError est levé si le nom de la playlist est vide.
         """
         nom_playlist = simpledialog.askstring("Créer une playlist", "Entrez le nom de la playlist:")
         if nom_playlist:
@@ -88,9 +90,11 @@ class GestionnaireBibliothequeMusicale:
         Ajoute des fichiers à une playlist existante.
 
         Contrats:
-        - La playlist sélectionnée doit exister dans l'attribut playlists.
-        - Les fichiers sélectionnés doivent être au format MP3, WAV ou FLAC.
-        - En cas de succès, la playlist est mise à jour avec les nouveaux fichiers.
+        - PRE : La playlist sélectionnée doit exister dans l'attribut playlists.
+                Les fichiers sélectionnés doivent être au format MP3, WAV ou FLAC.
+        - POST : La playlist est mise à jour avec les nouveaux fichiers.
+        - RAISE : KeyError est levé si la playlist sélectionnée n'existe pas.
+                  ValueError est levé si des fichiers invalides sont sélectionnés.
         """
         selected_playlist = self.selected_playlist.get()
         if selected_playlist in self.playlists:
@@ -104,8 +108,9 @@ class GestionnaireBibliothequeMusicale:
         Affiche le contenu d'une playlist.
 
         Contrats:
-        - La playlist sélectionnée doit exister dans l'attribut playlists.
-        - En cas de succès, une boîte de dialogue affiche le contenu de la playlist.
+        - PRE : La playlist sélectionnée doit exister dans l'attribut playlists.
+        - POST : Une boîte de dialogue affiche le contenu de la playlist.
+        - RAISE : KeyError est levé si la playlist sélectionnée n'existe pas.
         """
         selected_playlist = self.selected_playlist.get()
         if selected_playlist in self.playlists:
@@ -139,7 +144,7 @@ class GestionnaireBibliothequeMusicale:
         Met à jour la combobox des playlists.
 
         Contrats:
-        - En cas de succès, la combobox est mise à jour avec la liste des playlists.
+        - En cas de succès, la combobox des playlists est mise à jour avec les noms des playlists.
         """
         playlists = list(self.playlists.keys())
         self.playlist_combobox["values"] = playlists
@@ -150,16 +155,12 @@ class GestionnaireBibliothequeMusicale:
 
     def extraire_metadata(self, chemin_fichier: str) -> tuple:
         """
-        Extrait les métadonnées d'un fichier musical.
+        Extrait les métadonnées (titre, artiste) d'un fichier audio.
 
         Contrats:
-        - chemin_fichier est une chaîne de caractères représentant le chemin d'un fichier.
-
-        Args:
-        - chemin_fichier: Chemin du fichier musical.
-
-        Returns:
-        - Tuple contenant les métadonnées (titre, artiste).
+        - PRE : chemin_fichier est une chaîne de caractères représentant un chemin de fichier valide.
+        - POST : Retourne un tuple contenant les métadonnées (titre, artiste).
+        - RAISE : En cas d'erreur d'extraction des métadonnées, une exception est levée.
         """
         try:
             if chemin_fichier.lower().endswith('.mp3'):
@@ -183,6 +184,7 @@ class GestionnaireBibliothequeMusicale:
 
         Contrats:
         - En cas de succès, les fichiers sélectionnés sont supprimés de la liste_de_musique.
+        - RAISE : Aucune exception n'est levée en cas de succès.
         """
         selected_indices = self.liste_box.curselection()
         if selected_indices:
@@ -196,6 +198,7 @@ class GestionnaireBibliothequeMusicale:
 
         Contrats:
         - En cas de succès, la liste_de_musique est vidée.
+        - RAISE : Aucune exception n'est levée en cas de succès.
         """
         self.liste_de_musique = []
         self.maj_liste_box()
@@ -205,8 +208,9 @@ class GestionnaireBibliothequeMusicale:
         Supprime une playlist.
 
         Contrats:
-        - La playlist sélectionnée doit exister dans l'attribut playlists.
-        - En cas de succès, la playlist est supprimée de l'attribut playlists.
+        - PRE : La playlist sélectionnée doit exister dans l'attribut playlists.
+        - POST : La playlist est supprimée de l'attribut playlists.
+        - RAISE : KeyError est levé si la playlist sélectionnée n'existe pas.
         """
         selected_playlist = self.selected_playlist.get()
         if selected_playlist in self.playlists:
@@ -218,8 +222,9 @@ class GestionnaireBibliothequeMusicale:
         Exporte la bibliothèque musicale au format CSV.
 
         Contrats:
-        - L'utilisateur doit spécifier un nom de fichier valide lors de l'enregistrement.
-        - En cas de succès, un fichier CSV est créé avec les métadonnées de la bibliothèque.
+        - PRE : L'utilisateur doit spécifier un nom de fichier valide lors de l'enregistrement.
+        - POST : Un fichier CSV est créé avec les métadonnées de la bibliothèque.
+        - RAISE : FileNotFoundError est levé si l'utilisateur annule la sélection du fichier.
         """
         nom_fichier = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("Fichiers CSV", "*.csv")])
         if nom_fichier:
