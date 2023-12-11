@@ -20,7 +20,6 @@ class GestionnaireBibliothequeMusicale:
         self.menu_fichier = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_fichier.add_command(label="Ajouter des fichiers musicaux", command=self.ajouter_musique)
         self.menu_fichier.add_command(label="Exporter en CSV", command=self.exporter_csv)
-        self.menu_fichier.add_command(label="Importer depuis CSV", command=self.importer_csv)
         self.menu_fichier.add_separator()
         self.menu_fichier.add_command(label="Quitter", command=root.destroy)
         self.menu_bar.add_cascade(label="Fichier", menu=self.menu_fichier)
@@ -139,41 +138,18 @@ class GestionnaireBibliothequeMusicale:
             with open(nom_fichier, mode='w', newline='', encoding='utf-8') as fichier_csv:
                 writer = csv.writer(fichier_csv)
                 writer.writerow(["Artiste", "Titre", "Playlist"])
+                
+                # Ajouter les fichiers de la liste principale
                 for musique in self.liste_de_musique:
                     titre, artiste = self.extraire_metadata(musique)
                     writer.writerow([artiste, titre, ""])
+                    
+                # Ajouter les fichiers de toutes les playlists
                 for playlist, musiques in self.playlists.items():
                     for musique in musiques:
                         titre, artiste = self.extraire_metadata(musique)
                         writer.writerow([artiste, titre, playlist])
 
-    def importer_csv(self):
-        nom_fichier = filedialog.askopenfilename(title="Sélectionnez un fichier CSV", filetypes=[("Fichiers CSV", "*.csv")])
-        if nom_fichier:
-            with open(nom_fichier, mode='r', encoding='utf-8') as fichier_csv:
-                reader = csv.reader(fichier_csv)
-                next(reader)  # Ignorer la première ligne (en-têtes)
-                self.liste_de_musique = []
-                self.playlists = {}
-                for ligne in reader:
-                    artiste, titre, playlist = ligne
-                    fichier = self.trouver_fichier(artiste, titre)
-                    if fichier:
-                        if playlist == "":
-                            self.liste_de_musique.append(fichier)
-                        else:
-                            if playlist not in self.playlists:
-                                self.playlists[playlist] = []
-                            self.playlists[playlist].append(fichier)
-            self.maj_liste_box()
-            self.maj_liste_combobox()
-
-    def trouver_fichier(self, artiste, titre):
-        for fichier in self.liste_de_musique:
-            t, a = self.extraire_metadata(fichier)
-            if t == titre and a == artiste:
-                return fichier
-        return ""
 
 if __name__ == "__main__":
     root = tk.Tk()
