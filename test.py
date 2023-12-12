@@ -5,13 +5,13 @@ import os
 import tempfile
 import tkinter as tk
 
-from main import GestionnaireBibliothequeMusicale
+from main import GestionnaireBibliothequeMusicale, Musique, Playlist
+
 
 class TestGestionnaireBibliothequeMusicale(unittest.TestCase):
 
     def setUp(self):
-        self.root = tk.Tk()
-        self.app = GestionnaireBibliothequeMusicale(self.root)
+        self.app = GestionnaireBibliothequeMusicale()
 
     def test_ajouter_musique(self):
         # Utiliser un fichier temporaire pour simuler la sélection de fichiers
@@ -51,7 +51,8 @@ class TestGestionnaireBibliothequeMusicale(unittest.TestCase):
         os.remove(temp_file_path)
 
     def tearDown(self):
-        self.root.destroy()
+        self.app.destroy()
+
 
 if __name__ == "__main__":
     unittest.main()
