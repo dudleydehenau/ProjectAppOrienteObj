@@ -44,11 +44,36 @@ class TestGestionnaireBibliothequeMusicale(unittest.TestCase):
 
             # Vérifier le contenu du fichier CSV
             with open(temp_file_path, "r", encoding="utf-8") as file:
-                content = file.read()
-                self.assertIn("Artiste,Titre,Playlist", content)
+                lines = file.readlines()
+                # Vérifier que chaque en-tête est présent dans le fichier
+                self.assertIn("Artiste", lines[0])
+                self.assertIn("Titre", lines[0])
+                self.assertIn("Playlist", lines[0])
+
+                # Vérifier que chaque ligne suivante commence par des guillemets et contient au moins un caractère
+                for line in lines[1:]:
+                    self.assertTrue(line.startswith('"'))
+                    self.assertTrue(len(line) > 1)
 
         # Nettoyer le fichier temporaire
         os.remove(temp_file_path)
+
+
+    def test_supprimer_playlist(self):
+        # Créer une playlist pour le test
+        self.app.playlists["TestPlaylist"] = Playlist("TestPlaylist")
+        
+        # Sélectionner la playlist créée
+        self.app.selected_playlist.set("TestPlaylist")
+        
+        initial_length = len(self.app.playlists)
+        
+        # Supprimer la playlist
+        self.app.supprimer_playlist()
+        
+        # Vérifier que la playlist a été supprimée
+        self.assertEqual(len(self.app.playlists), initial_length - 1)
+        self.assertNotIn("TestPlaylist", self.app.playlists)
 
     def tearDown(self):
         self.app.destroy()

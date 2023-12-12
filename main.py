@@ -170,7 +170,7 @@ class GestionnaireBibliothequeMusicale(tk.Tk):
                     self.playlists[selected_playlist].get_musiques().extend(musiques)
                     self.maj_liste_box()
             else:
-                raise KeyError(f"La playlist sélectionnée '{selected_playlist}' n'existe pas.")
+                raise KeyError("La playlist n'existe pas.")
         except KeyError as e:
             messagebox.showerror("Erreur", str(e))
 
@@ -251,7 +251,7 @@ class GestionnaireBibliothequeMusicale(tk.Tk):
                 del self.playlists[selected_playlist]
                 self.maj_liste_combobox()
             else:
-                raise KeyError(f"La playlist sélectionnée '{selected_playlist}' n'existe pas.")
+                raise KeyError("La playlist n'existe pas.")
         except KeyError as e:
             messagebox.showerror("Erreur", str(e))
 
@@ -262,7 +262,7 @@ class GestionnaireBibliothequeMusicale(tk.Tk):
         )
         if nom_fichier:
             with open(nom_fichier, mode='w', newline='', encoding='utf-8') as fichier_csv:
-                writer = csv.writer(fichier_csv)
+                writer = csv.writer(fichier_csv, quoting=csv.QUOTE_NONNUMERIC)
                 writer.writerow(["Artiste", "Titre", "Playlist"])
 
                 # Ajouter les fichiers de la liste principale
